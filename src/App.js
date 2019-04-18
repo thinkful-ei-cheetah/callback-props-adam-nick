@@ -9,15 +9,31 @@ class App extends Component {
     allCards: {...STORE.allCards}
   }
 
-  handleClickAdd =() => {
-    console.log('handleClickAdd');
-    const id = Math.random().toString(36).substring(2, 4)
-      + Math.random().toString(36).substring(2, 4);
-    return {
-      id,
-      title: `Random Card ${id}`,
-      content: 'lorem ipsum',
+  handleClickAdd =(listId) => {
+    const newRandomCard = () =>{
+      console.log('handleClickAdd');
+      const id = Math.random().toString(36).substring(2, 4)
+        + Math.random().toString(36).substring(2, 4);
+      return {
+        id,
+        title: `Random Card ${id}`,
+        content: 'lorem ipsum',
+      }
     }
+    const newCard = newRandomCard();
+    const newAllCards = {
+      ...this.state.allCards,
+      [newCard.id]: newCard
+    }
+    const newLists = this.state.lists.map(list => 
+      list.id !== listId ? list : {...list, cardIds: [...list.cardIds, newCard.id]}
+    );
+    console.log(newAllCards)
+    this.setState({
+      lists: newLists,
+      allCards: newAllCards
+    })
+
   }
   
   handleClickDelete = (cardId) =>{
@@ -60,7 +76,7 @@ class App extends Component {
               key={list.id}
               header={list.header}
               cards={list.cardIds.map(id => this.state.allCards[id])}
-              addToList={this.handleClickAdd}
+              addToList={(listId) => this.handleClickAdd(list.id)}
               deleteFromList={(cardId) => this.handleClickDelete(cardId)}
             />
           ))}
